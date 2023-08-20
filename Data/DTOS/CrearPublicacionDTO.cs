@@ -8,5 +8,7 @@ namespace Blogging.DTOS
         public string? Titulo { get; set; }
         [Required]
         public string? Content { get; set; }
+        [Required]
+        public int? UsuarioId { get; set; }
     }
 }

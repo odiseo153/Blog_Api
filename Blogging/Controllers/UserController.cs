@@ -26,12 +26,18 @@ namespace Blogging.Controllers
         context = con;
         mapper = map;
 
-            context.Usuarios.Add(Data.AgregarDatos());
+       }
+
+       
+
+        [HttpGet("Obtener_Usuario")]
+        public ActionResult GetUser()
+        {
+           return StatusCode(StatusCodes.Status200OK, context.Usuarios.ToList());
         }
 
-
-        [HttpPost("auth/register")]
-        public ActionResult RegistrarUser(UsuarioCreateDTO user)
+        [HttpPost("Registrar_Usuario")]
+        public ActionResult RegistrarUser([Required]UsuarioCreateDTO user)
         {
 
             var usuario = mapper.Map<Usuario>(user); 
@@ -42,7 +48,7 @@ namespace Blogging.Controllers
             return StatusCode(StatusCodes.Status200OK,usuario);
         }
 
-        [HttpPost("auth/Login")]
+        [HttpGet("Iniciar_Sesion")]
         public ActionResult LoginUser([Required]UsuarioCreateDTO user)
         {
 
@@ -56,75 +62,10 @@ namespace Blogging.Controllers
             return StatusCode(StatusCodes.Status200OK,new {Token=TokenController.GenerarToken(user)} );
         }
 
+      
 
-        [HttpPost("post")]
-        public ActionResult CrearPublicacion(CrearPublicacionDTO publish)
-        {
-            var publicacion= mapper.Map<Publicacion>(publish);
+      
 
-            context.Publicaciones.Add(publicacion);
-            context.SaveChanges();
-
-            return StatusCode(StatusCodes.Status200OK,publicacion);
-        }
-
-        [HttpGet("post/:id")]
-        public ActionResult GetPublishById(int id)
-        {
-            var publicacion = context.Publicaciones.FirstOrDefault(x=>x.Id==id);
-
-            return StatusCode(StatusCodes.Status200OK, publicacion);
-        }
-
-        [Authorize]
-        [HttpGet("Publicaciones")]
-        public ActionResult GetPublish()
-        {
-            return StatusCode(StatusCodes.Status200OK, context.Publicaciones.ToList());
-        }
-
-        [HttpGet("User")]
-        public ActionResult GetUser()
-        {
-            return StatusCode(StatusCodes.Status200OK, context.Usuarios.ToList());
-        }
-
-        [HttpGet("Busqueda")]
-        public ActionResult Search([Required]string busqueda)
-        {
-            var result = context.Publicaciones.Where(x => x.Titulo.Contains(busqueda) || x.Content.Contains(busqueda));
-
-            return StatusCode(StatusCodes.Status200OK, result.ToList());
-        }
-
-
-
-
-        [HttpPost("Comments")]
-        public dynamic CreateComment(CreateCommentDTO comment)
-        {
-            var validation = new CommentValidation().Validate(comment);
-
-            if (!validation.IsValid) 
-            {
-                return validation.Errors.Select(x=>new
-                {
-                    Message=x.ErrorMessage,
-                    Code=x.ErrorCode
-
-                });     
-            }
-
-            var NewComment = mapper.Map<Comment>(comment);
-
-
-            context.comment.Add(NewComment);
-            context.SaveChanges();
-
-
-         return StatusCode(StatusCodes.Status200OK, comment);
-        }
-
-        
+      
     }
 }
